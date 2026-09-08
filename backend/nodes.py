@@ -5,7 +5,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from backend.state import BlogState
-backend/nodes.py
+
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
