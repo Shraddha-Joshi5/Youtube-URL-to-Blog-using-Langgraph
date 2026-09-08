@@ -1,25 +1,25 @@
 import os
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from backend.graph import workflow
+from fastapi.responses import FileResponse
+
 
 app = FastAPI(title="YouTube to Blog AI API")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 class BlogRequest(BaseModel):
     url: str
 
+@app.get("/")
+def home():
+    return FileResponse("frontend/index.html")
+
 @app.post("/api/generate-blog")
 async def generate_blog_endpoint(request: BlogRequest):
-    if not os.getenv("OPENAI_API_KEY"):
+    if not (os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")):
         raise HTTPException(status_code=500, detail="Server configuration error: Missing LLM API Key.")
 
     initial_state = {"youtube_url": request.url, "error": None}
